@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.optimize import minimize
 
--# Определение функции
+# Определение функции
 def objective_function(x1, x2):
     return (x1 - 2) ** 2 + (x2 - 1) ** 2
 
--# Первый этап: Построение сетки и линий уровней функции
+# Первый этап: Построение сетки и линий уровней функции
 def plot_contour_and_surface():
     x1_range = np.arange(-1, 4.5, 0.5)
     x2_range = np.arange(-1, 4.5, 0.5)
@@ -26,7 +26,7 @@ def plot_contour_and_surface():
 
     plt.show()
 
--# Второй этап: Поиск минимума функции с учетом функциональных ограничений
+# Второй этап: Поиск минимума функции с учетом функциональных ограничений
 def find_minimum_with_constraints():
     def objective_function_opt(x):
         return (x[0] - 2) ** 2 + (x[1] - 1) ** 2
@@ -45,7 +45,7 @@ def find_minimum_with_constraints():
     print("Минимум функции:", result.fun)
     print("Значения переменных x1, x2:", result.x)
 
--# Третий этап: Изменение области допустимых значений и поиск условного минимума
+# Третий этап: Изменение области допустимых значений и поиск условного минимума
 def find_conditional_minimum():
     def updated_constraint1(x):
         return x[0] - 2 * x[1] + 1
