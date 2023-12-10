@@ -1,0 +1,65 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Определение минимизируемой функции
+def objective_function(x, y):
+    return x**2 + y**2
+
+# Определение оператора случайного шага
+def random_step():
+    return np.random.uniform(-1, 1, 2)
+
+# Определение оператора повторения предыдущего шага
+def repeat_step(previous_step):
+    return previous_step
+
+# Линейная тактика: если шаг уменьшил значение функции, то повторяем его, иначе делаем случайный шаг
+def linear_tactic(x, y, previous_step):
+    current_value = objective_function(x, y)
+    random_step_value = objective_function(x + random_step()[0], y + random_step()[1])
+    repeat_step_value = objective_function(x + repeat_step(previous_step)[0], y + repeat_step(previous_step)[1])
+
+    if repeat_step_value < current_value:
+        return repeat_step(previous_step)
+    else:
+        return random_step()
+
+# Алгоритм случайного поиска с линейной тактикой
+def random_search_linear_tactic(iterations):
+    x, y = 5.0, 5.0  # Начальная точка
+    trajectory = [(x, y)]
+
+    for _ in range(iterations):
+        step = linear_tactic(x, y, trajectory[-1])
+        x, y = x + step[0], y + step[1]
+        trajectory.append((x, y))
+
+    return np.array(trajectory)
+
+# Построение 3D модели
+def plot_3d_model(trajectory):
+    x = np.linspace(-6, 6, 100)
+    y = np.linspace(-6, 6, 100)
+    X, Y = np.meshgrid(x, y)
+    Z = objective_function(X, Y)
+
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    ax.plot_surface(X, Y, Z, cmap='viridis', alpha=0.7)
+    ax.scatter(trajectory[:, 0], trajectory[:, 1], objective_function(trajectory[:, 0], trajectory[:, 1]),
+               color='red', s=50, label='Optimization Path')
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Objective Function')
+    ax.legend()
+    plt.title('Random Search with Linear Tactic')
+
+    plt.show()
+
+# Выполнение алгоритма и построение модели
+iterations = 100
+trajectory = random_search_linear_tactic(iterations)
+plot_3d_model(trajectory)
