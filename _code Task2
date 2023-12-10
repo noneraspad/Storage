@@ -63,4 +63,5 @@ ax.legend()
 plt.title('Objective Function with Feasible Region and Monte Carlo Minimum')
 
 # Показать график
+
 plt.show()
