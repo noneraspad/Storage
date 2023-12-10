@@ -1,0 +1,64 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Определение минимизируемой функции
+def objective_function(x, y):
+    return x**2 + y**2
+
+# Определение оператора случайного шага
+def random_step():
+    return np.random.uniform(-1, 1, 2)
+
+# Определение оператора возврата на предыдущий удачный шаг
+def reverse_to_previous_successful_step(x, y, previous_step):
+    return (x - previous_step[0], y - previous_step[1])
+
+# Алгоритм случайного поиска с возвратом на предыдущий удачный шаг
+def random_search_with_reverse(iterations):
+    x, y = 5.0, 5.0  # Начальная точка
+    trajectory = [(x, y)]
+    successful_step = random_step()
+
+    for _ in range(iterations):
+        step = random_step()
+
+        current_value = objective_function(x, y)
+        new_value = objective_function(x + step[0], y + step[1])
+
+        if new_value < current_value:
+            x, y = x + step[0], y + step[1]
+            successful_step = step
+        else:
+            x, y = x + successful_step[0], y + successful_step[1]
+
+        trajectory.append((x, y))
+
+    return np.array(trajectory)
+
+# Построение 3D модели
+def plot_3d_model(trajectory):
+    x = np.linspace(-6, 6, 100)
+    y = np.linspace(-6, 6, 100)
+    X, Y = np.meshgrid(x, y)
+    Z = objective_function(X, Y)
+
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    ax.plot_surface(X, Y, Z, cmap='viridis', alpha=0.7)
+    ax.scatter(trajectory[:, 0], trajectory[:, 1], objective_function(trajectory[:, 0], trajectory[:, 1]),
+               color='red', s=50, label='Optimization Path')
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Objective Function')
+    ax.legend()
+    plt.title('Random Search with Reverse to Previous Successful Step')
+
+    plt.show()
+
+# Выполнение алгоритма и построение модели
+iterations = 100
+trajectory = random_search_with_reverse(iterations)
+plot_3d_model(trajectory)
