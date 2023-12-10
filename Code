@@ -13,10 +13,12 @@ def constraint1(x1, x2):
 def constraint2(x1, x2):
     return -0.25*x1**2 - x2**2 + 1
 
-# Создание сетки
+# Задание области поиска
 x1_min, x1_max = -1, 4
 x2_min, x2_max = -1, 4
 delta = 0.5
+
+# Создание сетки
 x1_values = np.arange(x1_min, x1_max + delta, delta)
 x2_values = np.arange(x2_min, x2_max + delta, delta)
 x1_grid, x2_grid = np.meshgrid(x1_values, x2_values)
@@ -25,22 +27,20 @@ x1_grid, x2_grid = np.meshgrid(x1_values, x2_values)
 objective_values = objective_function(x1_grid, x2_grid)
 
 # Построение 3D модели
-fig = plt.figure()
+fig = plt.figure(figsize=(12, 8))
 ax = fig.add_subplot(111, projection='3d')
+
+# Построение поверхности и линий уровней
 ax.plot_surface(x1_grid, x2_grid, objective_values, cmap='viridis', alpha=0.7)
+ax.contour(x1_grid, x2_grid, objective_values, levels=20, cmap='viridis')
 
-# Построение линий уровней функции
-plt.contour(x1_grid, x2_grid, objective_values, levels=20, cmap='viridis')
+# Построение области допустимых решений (используя constraint1 и constraint2)
+feasible_region = np.zeros_like(objective_values)
+feasible_region[constraint1(x1_grid, x2_grid) >= 0] = 1
+feasible_region[constraint2(x1_grid, x2_grid) >= 0] = 1
 
-# Построение области допустимых решений
-x1_feasible = np.linspace(x1_min, x1_max, 100)
-x2_feasible1 = (x1_feasible + 1) / 2
-x2_feasible2 = np.sqrt(1 - 0.25*x1_feasible**2)
-plt.fill_between(x1_feasible, x2_feasible1, x2_feasible2, color='gray', alpha=0.5, label='Feasible Region')
-
-# Установка метки минимума функции
-min_point = np.array([2, 1, objective_function(2, 1)])
-ax.scatter(*min_point, color='red', s=50, label='Minimum')
+# Наложение области допустимых решений на график
+ax.plot_surface(x1_grid, x2_grid, feasible_region, color='gray', alpha=0.5, label='Feasible Region')
 
 # Настройка графика
 ax.set_xlabel('X1')
@@ -48,4 +48,15 @@ ax.set_ylabel('X2')
 ax.set_zlabel('Objective Function')
 ax.legend()
 plt.title('Objective Function and Feasible Region')
+
+# Поиск минимума с учетом ограничений
+min_value = np.min(objective_values[feasible_region == 1])
+min_point = np.unravel_index(np.argmin(objective_values), objective_values.shape)
+min_x1, min_x2 = x1_values[min_point[1]], x2_values[min_point[0]]
+
+# Вывод точки с минимальным значением функции в области допустимых решений
+ax.scatter(min_x1, min_x2, min_value, color='red', s=50, label='Minimum in Feasible Region')
+ax.legend()
+
+# Показать график
 plt.show()
