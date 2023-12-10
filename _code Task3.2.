@@ -63,3 +63,4 @@ iterations = 100
 trajectory = random_search_with_reverse(iterations)
 plot_3d_model(trajectory)
 
+
