@@ -63,3 +63,4 @@ def plot_3d_model(trajectory):
 iterations = 100
 trajectory = random_search_linear_tactic(iterations)
 plot_3d_model(trajectory)
+
