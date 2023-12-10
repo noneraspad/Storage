@@ -1,0 +1,66 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Определение функции
+def objective_function(x1, x2):
+    return (x1 - 2)**2 + (x2 - 1)**2
+
+# Определение функциональных ограничений
+def constraint1(x1, x2):
+    return x1 - 2*x2 + 1
+
+def constraint2(x1, x2):
+    return -0.25*x1**2 - x2**2 + 1
+
+# Число испытаний методом Монте-Карло
+m = 150
+
+# Создание сетки для визуализации
+x1_min, x1_max = -1, 4
+x2_min, x2_max = -1, 4
+delta = 0.5
+x1_values = np.arange(x1_min, x1_max + delta, delta)
+x2_values = np.arange(x2_min, x2_max + delta, delta)
+x1_grid, x2_grid = np.meshgrid(x1_values, x2_values)
+
+# Вычисление значений функции на сетке
+objective_values = objective_function(x1_grid, x2_grid)
+
+# Генерация случайных точек в области поиска
+x1_samples = np.random.uniform(x1_min, x1_max, m)
+x2_samples = np.random.uniform(x2_min, x2_max, m)
+
+# Отбор только допустимых точек по функциональным ограничениям
+feasible_samples = [(x1, x2) for x1, x2 in zip(x1_samples, x2_samples) if constraint1(x1, x2) >= 0 and constraint2(x1, x2) >= 0]
+
+# Вычисление значений функции в отобранных точках
+objective_values_samples = [objective_function(x1, x2) for x1, x2 in feasible_samples]
+
+# Нахождение минимального значения и соответствующей точки
+min_index_samples = np.argmin(objective_values_samples)
+min_point_samples = feasible_samples[min_index_samples]
+
+# Построение 3D модели
+fig = plt.figure(figsize=(12, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# Построение поверхности и линий уровней
+ax.plot_surface(x1_grid, x2_grid, objective_values, cmap='viridis', alpha=0.7)
+ax.contour(x1_grid, x2_grid, objective_values, levels=20, cmap='viridis')
+
+# Построение области допустимых решений
+ax.plot_surface(x1_grid, x2_grid, feasible_region, color='gray', alpha=0.5, label='Feasible Region')
+
+# Нанесение на график точки с минимальным значением функции
+ax.scatter(*min_point_samples, objective_function(*min_point_samples), color='red', s=50, label='Minimum by Monte Carlo')
+
+# Настройка графика
+ax.set_xlabel('X1')
+ax.set_ylabel('X2')
+ax.set_zlabel('Objective Function')
+ax.legend()
+plt.title('Objective Function with Feasible Region and Monte Carlo Minimum')
+
+# Показать график
+plt.show()
