@@ -1,87 +1,57 @@
-## 1. Установка кластера с одной управляющей и двумя рабочими нодами   
-
-Для установки Docker Swarm кластера выполните следующие шаги:   
-
-На управляющей ноде:   
-```sh 
-docker swarm init --advertise-addr <IP-адрес-управляющей-ноды>
-```
-
-На рабочих нодах:   
+Пример 1: Использование HADOLINT для анализа Dockerfile
+Установите HADOLINT. В зависимости от вашей операционной системы, это может выглядеть как:
 ```sh
-docker swarm join --token <токен> <IP-адрес-управляющей-ноды>:<порт>
-```
+bash
+Copy code
+--Для Linux (Debian/Ubuntu)
+sudo apt-get install -y hadolint
 
-## 2. Удаление и повторное добавление рабочей ноды в кластер
+--Для macOS
+brew install hadolint
+
+--Для Windows (PowerShell)
+choco install hadolint
+```
+Запустите HADOLINT для анализа Dockerfile:
 ```sh
---На управляющей ноде выполняем   
-docker node rm <ID-рабочей-ноды>   
-
---После этого повторно добавляем ноду (как указано в первом пункте)   
+bash
+Copy code
+hadolint Dockerfile
 ```
-## 3. Создание Docker образа с метаданными узла
-Dockerfile    
-```sh
-FROM python:3.8
+HADOLINT выдаст предупреждения и рекомендации по улучшению вашего Dockerfile.
 
--- Установка Flask   
-RUN pip install Flask
+Пример 2: Использование Dive для анализа слоев образа
+Установите Dive:
 
--- Копирование приложения   
-COPY app.py /app/app.py
+bash
+Copy code
+--Для Linux (Debian/Ubuntu)
+sudo apt-get install -y dive
 
--- Открываем порт   
-EXPOSE 5000
+--Для macOS
+brew install dive
 
--- Команда для запуска Flask-приложения   
-CMD ["python", "/app/app.py"]
-```
+--Для Windows (PowerShell)
+choco install dive
+Запустите Dive для анализа слоев образа:
 
-app.py
-```sh
-from flask import Flask
-import socket
+bash
+Copy code
+dive ваше_имя_образа
+Dive позволяет вам просматривать и анализировать слои образа, идентифицируя, какие файлы и зависимости добавляются на каждом этапе.
 
-app = Flask(__name__)
+Пример 3: Анализ безопасности с помощью Anchore/Grype
+Установите Anchore Engine (подробные инструкции доступны на официальном сайте Anchore).
 
-@app.route('/')
-def hello():
-    # Получаем IP-адрес текущего узла
-    ip_address = socket.gethostbyname(socket.gethostname())
-    return f'Node IP Address: {ip_address}'
+Запустите Anchore Engine и добавьте ваш образ для анализа:
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+bash
+Copy code
+--Добавление образа
+anchore-cli image add ваше_имя_образа
 
-```
-## 4. Разворачивание сервиса с 3 репликами
-```sh
-docker service create --replicas 3 --name my-service -p 5000:5000 ваше_имя_образа
-```
+--Анализ уязвимостей
+anchore-cli image vuln ваше_имя_образа all
+Anchore Engine выдаст отчет о безопасности, включая уязвимости, обнаруженные в компонентах вашего образа.
 
-## 5. Пересборка образа с дополнительной информацией о разработчике
-Dockerfile (обновленный)
-```
-FROM python:3.8
-
-# Установка Flask
-RUN pip install Flask
-
-# Копирование приложения
-COPY app.py /app/app.py
-
-# Открываем порт
-EXPOSE 5000
-
-# Дополнительная информация о разработчике
-LABEL maintainer="Ваше Имя <ваш_email>"
-
-# Команда для запуска Flask-приложения
-CMD ["python", "/app/app.py"]
-```
-## 6. Обновление приложения с использованием docker service update
-```sh
-# Пересоздаем сервис с новой версией образа
-docker service update --image ваше_имя_образа:новая_версия my-service
-```
-
+Эти инструменты могут помочь вам улучшить безопасность и оптимизировать ваши Docker-образы.
