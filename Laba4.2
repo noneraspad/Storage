@@ -1,0 +1,14 @@
+# Программный модуль: Скрытый слой сети
+
+class HiddenLayer:
+    def __init__(self, input_size, num_neurons, activation_function='threshold', threshold=0):
+        self.neurons = [Neuron(input_size, activation_function, threshold) for _ in range(num_neurons)]
+
+    def forward(self, inputs):
+        return [neuron.forward(inputs) for neuron in self.neurons]
+
+# Пример использования
+hidden_layer = HiddenLayer(input_size=2, num_neurons=3, activation_function='sigmoid')
+inputs = np.array([0.3, 0.7])
+output_hidden = hidden_layer.forward(inputs)
+print(f"Hidden Layer Output: {output_hidden}")
