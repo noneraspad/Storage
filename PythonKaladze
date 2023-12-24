@@ -1,0 +1,35 @@
+import numpy as np
+
+class ActivationFunction:
+    def __init__(self, function_type='threshold'):
+        self.function_type = function_type
+
+    def threshold(self, z, threshold_value=0):
+        return 1 if z >= threshold_value else 0
+
+    def linear(self, z):
+        return z
+
+    def sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
+
+    def hyperbolic_tangent(self, z):
+        return np.tanh(z)
+
+    def apply(self, z, threshold_value=0):
+        if self.function_type == 'threshold':
+            return self.threshold(z, threshold_value)
+        elif self.function_type == 'linear':
+            return self.linear(z)
+        elif self.function_type == 'sigmoid':
+            return self.sigmoid(z)
+        elif self.function_type == 'tanh':
+            return self.hyperbolic_tangent(z)
+        else:
+            raise ValueError("Invalid activation function type")
+
+# Пример использования:
+activation_function = ActivationFunction(function_type='sigmoid')
+z_value = 0.5
+output = activation_function.apply(z_value)
+print(f"Output for {activation_function.function_type} function: {output}")
