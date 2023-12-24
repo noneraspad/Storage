@@ -1,0 +1,35 @@
+# Математическая модель нейрона:
+
+import numpy as np
+
+class Neuron:
+    def __init__(self, input_size, activation_function='threshold', threshold=0):
+        self.weights = np.random.rand(input_size)
+        self.bias = np.random.rand()
+        self.activation_function = activation_function
+        self.threshold = threshold
+
+    def linear_transform(self, inputs):
+        return np.dot(inputs, self.weights) + self.bias
+
+    def activate(self, z):
+        if self.activation_function == 'threshold':
+            return 1 if z >= self.threshold else 0
+        elif self.activation_function == 'linear':
+            return z
+        elif self.activation_function == 'sigmoid':
+            return 1 / (1 + np.exp(-z))
+        elif self.activation_function == 'tanh':
+            return np.tanh(z)
+        else:
+            raise ValueError("Invalid activation function type")
+
+    def forward(self, inputs):
+        z = self.linear_transform(inputs)
+        return self.activate(z)
+
+# Пример использования
+neuron = Neuron(input_size=2, activation_function='threshold', threshold=0.5)
+inputs = np.array([0.3, 0.7])
+output = neuron.forward(inputs)
+print(f"Neuron Output: {output}")
