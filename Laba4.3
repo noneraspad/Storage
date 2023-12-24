@@ -1,0 +1,17 @@
+# Программный модуль: Оболочка ИНС
+
+class NeuralNetwork:
+    def __init__(self, input_size, hidden_layer_neurons, output_neurons, activation_function='threshold', threshold=0):
+        self.input_size = input_size
+        self.hidden_layer = HiddenLayer(input_size, hidden_layer_neurons, activation_function, threshold)
+        self.output_neuron = Neuron(hidden_layer_neurons, activation_function, threshold)
+
+    def forward(self, inputs):
+        hidden_output = self.hidden_layer.forward(inputs)
+        return self.output_neuron.forward(hidden_output)
+
+# Пример использования
+neural_network = NeuralNetwork(input_size=2, hidden_layer_neurons=3, output_neurons=1, activation_function='linear')
+inputs = np.array([0.3, 0.7])
+output_nn = neural_network.forward(inputs)
+print(f"Neural Network Output: {output_nn}")
