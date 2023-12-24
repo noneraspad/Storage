@@ -1,35 +1,49 @@
 import numpy as np
 
-class ActivationFunction:
-    def __init__(self, function_type='threshold'):
-        self.function_type = function_type
+class Neuron:
+    def __init__(self, input_size, activation_function='threshold', threshold=0):
+        self.weights = np.random.rand(input_size)
+        self.bias = np.random.rand()
+        self.activation_function = activation_function
+        self.threshold = threshold
 
-    def threshold(self, z, threshold_value=0):
-        return 1 if z >= threshold_value else 0
+    def linear_transform(self, inputs):
+        return np.dot(inputs, self.weights) + self.bias
 
-    def linear(self, z):
-        return z
-
-    def sigmoid(self, z):
-        return 1 / (1 + np.exp(-z))
-
-    def hyperbolic_tangent(self, z):
-        return np.tanh(z)
-
-    def apply(self, z, threshold_value=0):
-        if self.function_type == 'threshold':
-            return self.threshold(z, threshold_value)
-        elif self.function_type == 'linear':
-            return self.linear(z)
-        elif self.function_type == 'sigmoid':
-            return self.sigmoid(z)
-        elif self.function_type == 'tanh':
-            return self.hyperbolic_tangent(z)
+    def activate(self, z):
+        if self.activation_function == 'threshold':
+            return 1 if z >= self.threshold else 0
+        elif self.activation_function == 'linear':
+            return z
+        elif self.activation_function == 'sigmoid':
+            return 1 / (1 + np.exp(-z))
+        elif self.activation_function == 'tanh':
+            return np.tanh(z)
         else:
             raise ValueError("Invalid activation function type")
 
-# Пример использования:
-activation_function = ActivationFunction(function_type='sigmoid')
-z_value = 0.5
-output = activation_function.apply(z_value)
-print(f"Output for {activation_function.function_type} function: {output}")
+    def forward(self, inputs):
+        z = self.linear_transform(inputs)
+        return self.activate(z)
+
+# Создаем нейрон с пороговой функцией
+neuron_threshold = Neuron(input_size=3, activation_function='threshold', threshold=2)
+
+# Создаем нейрон с линейной функцией
+neuron_linear = Neuron(input_size=3, activation_function='linear')
+
+# Создаем нейрон с сигмоидальной функцией
+neuron_sigmoid = Neuron(input_size=3, activation_function='sigmoid')
+
+# Создаем нейрон с гиперболическим тангенсом
+neuron_tanh = Neuron(input_size=3, activation_function='tanh')
+
+# Генерируем случайные входные данные
+inputs = np.random.rand(3)
+
+# Выводим результаты для каждого нейрона
+print(f"Inputs: {inputs}")
+print(f"Threshold Neuron Output: {neuron_threshold.forward(inputs)}")
+print(f"Linear Neuron Output: {neuron_linear.forward(inputs)}")
+print(f"Sigmoid Neuron Output: {neuron_sigmoid.forward(inputs)}")
+print(f"Tanh Neuron Output: {neuron_tanh.forward(inputs)}")
